@@ -1,6 +1,4 @@
-# Forçando a re-sincronização do workflow em 26/09/2025
-
-name: Pipeline Profissional de CI/CD
+name: Pipeline Profissional de CI/CD (Modo Manual)
 
 on:
   push:
@@ -29,17 +27,23 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 4. Build e Push da imagem Docker
-        uses: docker/build-and-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+      # --- A GRANDE MUDANÇA ESTÁ AQUI ---
+      # Removemos a action 'build-and-push' e a substituímos por dois passos manuais.
 
-      - name: 5. Teste simples da imagem
+      - name: 4. Build da imagem Docker (Manual)
+        run: docker build --tag ghcr.io/${{ github.repository }}:${{ github.sha }} .
+        # Este comando constrói a imagem e a etiqueta (tag) exatamente como a action faria.
+
+      - name: 5. Push da imagem Docker (Manual)
+        run: docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+        # Este comando empurra a imagem que acabamos de construir para o registry.
+
+      # --- Os passos seguintes foram renumerados ---
+
+      - name: 6. Teste simples da imagem
         run: docker run -d --name test-container ghcr.io/${{ github.repository }}:${{ github.sha }} && docker stop test-container
 
-      - name: 6. Scan de vulnerabilidades da imagem
+      - name: 7. Scan de vulnerabilidades da imagem
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'ghcr.io/${{ github.repository }}:${{ github.sha }}'
