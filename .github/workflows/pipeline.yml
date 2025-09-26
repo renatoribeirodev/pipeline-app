@@ -1,34 +1,32 @@
-# Nome do nosso pipeline
 name: Pipeline de Build e Deploy
-
-# Gatilho: Este pipeline vai rodar sempre que houver um "push" 
-# (envio de código) para a branch "main".
 on:
   push:
     branches: [ "main" ]
-
-# Tarefas a serem executadas
 jobs:
-  # Nome da nossa primeira (e única) tarefa
   build-and-deploy:
-    # A máquina virtual que o GitHub vai usar para rodar os passos
     runs-on: ubuntu-latest
-
-    # Os passos da nossa linha de montagem
     steps:
-      # Passo 1: Clonar o Repositório (Pegar o código)
-      # O robô precisa baixar o código do repositório para poder trabalhar com ele.
+      # Passo 1: Clonar o Repositório (Igual ao anterior)
       - name: 1. Clonando o repositório
         uses: actions/checkout@v3
-
-      # Passo 2: Construir a Imagem Docker (Montar a "caixa mágica")
-      # Aqui ele vai ler nosso Dockerfile e criar o pacote da aplicação.
-      # A "tag" é como uma etiqueta de versão para nossa imagem.
+        
+      # Passo 2: Construir a Imagem Docker (Igual ao anterior)
       - name: 2. Build da imagem Docker
-        run: docker build . --file Dockerfile --tag minha-app
+        run: docker build . --file Dockerfile --tag minha-app:${{ github.sha }}
 
-      # Passo 3 (Simulado): Teste Simples (Verificar se a "caixa" funciona)
-      # Este é um teste muito básico: tentamos rodar a imagem que acabamos de criar.
-      # Se o comando rodar sem erro, o passo passa.
+      # Passo 3: Teste Simples da Imagem (Opcional, mas bom manter)
       - name: 3. Teste simples da imagem
-        run: docker run -d --name test-container minha-app && docker stop test-container
+        run: docker run -d --name test-container minha-app:${{ github.sha }} && docker stop test-container
+
+      # --- NOVO PASSO PARA PONTOS EXTRAS ---
+      # Passo 4: Scan de Vulnerabilidades com Trivy
+      # Este passo verifica se a nossa "caixa mágica" (imagem Docker)
+      # tem alguma brecha de segurança conhecida.
+      - name: 4. Scan de vulnerabilidades da imagem
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'minha-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '0' # Para não falhar o pipeline se encontrar algo
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
