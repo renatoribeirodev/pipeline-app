@@ -1,3 +1,5 @@
+# Forçando a re-sincronização do workflow em 26/09/2025
+
 name: Pipeline Profissional de CI/CD
 
 on:
@@ -9,26 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # Permissão para escrever no GitHub Container Registry
+      packages: write
 
     steps:
-      # Passo 1: Clonar o Repositório (Igual ao anterior)
       - name: 1. Clonando o repositório
         uses: actions/checkout@v3
 
-      # --- NOVO PASSO 1 ---
-      # Passo 2: Lint do Código (Verificar a qualidade)
-      # Antes de fazer qualquer coisa, rodamos o script de lint que criamos.
-      # Se o ESLint encontrar algum erro, o pipeline falhará aqui.
       - name: 2. Lint do código com ESLint
         run: |
           npm install
           npm run lint
 
-      # --- NOVO PASSO 2 (Parte A) ---
-      # Passo 3: Login no GitHub Container Registry
-      # Para publicar a imagem, precisamos primeiro fazer o login seguro.
-      # Usamos um token especial que o GitHub Actions nos fornece.
       - name: 3. Login no GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -36,23 +29,16 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # --- PASSO MODIFICADO ---
-      # Passo 4: Construir E Publicar a Imagem Docker
-      # Agora, além de construir, este passo também "empurra" (push) a imagem
-      # para o GHCR, nosso depósito central.
       - name: 4. Build e Push da imagem Docker
         uses: docker/build-and-push-action@v4
         with:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
-          # ghcr.io/SEU_USUARIO/SEU_REPO:hash_do_commit
 
-      # Passo 5: Teste Simples da Imagem (Continua o mesmo)
       - name: 5. Teste simples da imagem
         run: docker run -d --name test-container ghcr.io/${{ github.repository }}:${{ github.sha }} && docker stop test-container
 
-      # Passo 6: Scan de Vulnerabilidades (Agora escaneia a imagem publicada)
       - name: 6. Scan de vulnerabilidades da imagem
         uses: aquasecurity/trivy-action@master
         with:
