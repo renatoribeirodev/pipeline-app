@@ -1,0 +1,182 @@
+/* --- Reset Básico e Definições Globais --- */
+:root {
+    --bg-color: #f7f9fc;
+    --card-bg-color: #ffffff;
+    --primary-text-color: #2d3748;
+    --secondary-text-color: #718096;
+    --primary-accent-color: #4a90e2;
+    /* Um azul suave e profissional */
+    --primary-accent-hover: #357abd;
+    --secondary-accent-color: #e2e8f0;
+    --secondary-accent-hover: #cbd5e0;
+    --border-color: #e2e8f0;
+    --shadow-color: rgba(0, 0, 0, 0.05);
+    --error-color: #e53e3e;
+    --success-color: #38a169;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--primary-text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+/* --- Layout Principal --- */
+.container {
+    width: 100%;
+    max-width: 900px;
+    text-align: center;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.header p {
+    font-size: 1.125rem;
+    color: var(--secondary-text-color);
+    margin-top: 0.5rem;
+}
+
+.footer {
+    margin-top: 3rem;
+    font-size: 0.875rem;
+    color: var(--secondary-text-color);
+}
+
+/* --- O Cartão da Ferramenta --- */
+.tool-card {
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 25px -5px var(--shadow-color), 0 10px 10px -5px var(--shadow-color);
+    text-align: left;
+}
+
+.io-panel {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+/* Em telas maiores, os painéis ficam lado a lado */
+@media (min-width: 768px) {
+    .io-panel {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.textarea-container {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+textarea {
+    min-height: 200px;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-accent-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+textarea[readonly] {
+    background-color: #f7f9fc;
+}
+
+/* --- Painel de Ações e Botões --- */
+.actions-panel {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background-color: var(--primary-accent-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-accent-hover);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-accent-color);
+    color: var(--primary-text-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--secondary-accent-hover);
+}
+
+.btn-tertiary {
+    background-color: transparent;
+    color: var(--secondary-text-color);
+}
+
+.btn-tertiary:hover {
+    background-color: var(--secondary-accent-color);
+}
+
+/* --- Mensagem de Status --- */
+.status-message {
+    margin-top: 1.5rem;
+    color: var(--success-color);
+    opacity: 0;
+    transition: opacity 0.3s;
+    height: 1.2em;
+    /* Reserva espaço para evitar que o layout "pule" */
+}
+
+.status-message.active {
+    opacity: 1;
+}
+
+.status-message.error {
+    color: var(--error-color);
+}

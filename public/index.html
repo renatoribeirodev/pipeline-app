@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Tools - Base64 Encoder/Decoder</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+
+<body>
+
+    <main class="container">
+        <header class="header">
+            <h1>DevOps Utility Belt 🛠️</h1>
+            <p>Uma ferramenta simples para codificar e decodificar texto em Base64.</p>
+        </header>
+
+        <section class="tool-card">
+            <div class="io-panel">
+                <div class="textarea-container">
+                    <label for="input-text">Entrada</label>
+                    <textarea id="input-text" placeholder="Digite ou cole seu texto aqui..."></textarea>
+                </div>
+                <div class="textarea-container">
+                    <label for="output-text">Saída</label>
+                    <textarea id="output-text" readonly placeholder="O resultado aparecerá aqui..."></textarea>
+                </div>
+            </div>
+
+            <div class="actions-panel">
+                <button id="encode-btn" class="btn btn-primary">Codificar para Base64</button>
+                <button id="decode-btn" class="btn btn-primary">Decodificar de Base64</button>
+                <button id="copy-btn" class="btn btn-secondary">Copiar Saída</button>
+                <button id="clear-btn" class="btn btn-tertiary">Limpar</button>
+            </div>
+
+            <div id="status-message" class="status-message"></div>
+        </section>
+
+        <footer class="footer">
+            <p>Projeto final do módulo de Platform Engineering - DevSecOps & SRE Practices.</p>
+            <p>Entregue automaticamente via Pipeline CI/CD com GitHub Actions e Render.</p>
+        </footer>
+    </main>
+
+    <script>
+        // Selecionando os elementos da página com os quais vamos interagir
+        const inputText = document.getElementById('input-text');
+        const outputText = document.getElementById('output-text');
+        const encodeBtn = document.getElementById('encode-btn');
+        const decodeBtn = document.getElementById('decode-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const statusMessage = document.getElementById('status-message');
+
+        // Função para mostrar uma mensagem de status (ex: "Copiado!") e fazê-la desaparecer
+        function showStatus(message, isError = false) {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message active';
+            if (isError) {
+                statusMessage.classList.add('error');
+            }
+            setTimeout(() => {
+                statusMessage.className = 'status-message';
+            }, 2000); // A mensagem desaparece após 2 segundos
+        }
+
+        // Evento de clique no botão de CODIFICAR
+        encodeBtn.addEventListener('click', () => {
+            const text = inputText.value;
+            if (text) {
+                // btoa() é a função nativa do JavaScript para codificar para Base64
+                outputText.value = btoa(text);
+                statusMessage.className = 'status-message'; // Limpa mensagens de erro
+            }
+        });
+
+        // Evento de clique no botão de DECODIFICAR
+        decodeBtn.addEventListener('click', () => {
+            const text = inputText.value;
+            if (text) {
+                try {
+                    // atob() é a função nativa para decodificar.
+                    // Usamos um try...catch pois ela gera um erro se o texto não for Base64 válido.
+                    // Isso é uma boa prática de programação defensiva (SRE mindset!).
+                    outputText.value = atob(text);
+                    statusMessage.className = 'status-message';
+                } catch (error) {
+                    showStatus('Erro: O texto de entrada não é um Base64 válido.', true);
+                }
+            }
+        });
+
+        // Evento de clique no botão de COPIAR
+        copyBtn.addEventListener('click', () => {
+            if (outputText.value) {
+                // API moderna e segura para copiar para a área de transferência
+                navigator.clipboard.writeText(outputText.value);
+                showStatus('Resultado copiado para a área de transferência!');
+            }
+        });
+
+        // Evento de clique no botão de LIMPAR
+        clearBtn.addEventListener('click', () => {
+            inputText.value = '';
+            outputText.value = '';
+            statusMessage.className = 'status-message';
+        });
+    </script>
+</body>
+
+</html>

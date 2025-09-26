@@ -1,15 +1,19 @@
 // Importa o framework Express
 const express = require('express');
-const app = express();
+// Importa o módulo 'path' do Node.js, para lidar com caminhos de arquivos
+const path = require('path');
 
-// Define a porta que nosso servidor vai usar. 
-// O Render (nossa vitrine) nos diz qual porta usar, por isso a variável de ambiente.
+const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Cria uma rota principal. Quando alguém acessar nosso site, verá essa mensagem.
-app.get('/', (req, res) => {
-  res.send('<h1>Meu primeiro Pipeline de Deploy!</h1><p>Funcionou! 🎉</p>');
-});
+// Middleware Mágico do Express!
+// Isso diz ao Express: "Qualquer arquivo que o navegador pedir,
+// primeiro procure na pasta 'public'".
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Como agora temos um 'index.html' dentro da pasta 'public', o Express
+// é inteligente o suficiente para servi-lo automaticamente quando alguém
+// acessa a raiz do site ('/'). Por isso, não precisamos mais do app.get('/'...)!
 
 // Manda o servidor começar a "escutar" por acessos na porta definida.
 app.listen(PORT, () => {
